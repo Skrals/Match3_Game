@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
 
 public class GameTimer : MonoBehaviour
 {
@@ -7,8 +8,10 @@ public class GameTimer : MonoBehaviour
 
     [SerializeField] private float _levelTime;
     [SerializeField] private float _currentTimer;
+    [SerializeField] private TMP_Text _text;
 
     private bool _gameOver;
+    private float _timerViewOffset = 1f;
 
     public void StartTimer(bool flag)
     {
@@ -19,7 +22,7 @@ public class GameTimer : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (_gameOver)
         {
@@ -28,12 +31,21 @@ public class GameTimer : MonoBehaviour
 
         if (_currentTimer > 0)
         {
-            _currentTimer -= Time.deltaTime;
+            _currentTimer -= Time.fixedDeltaTime;
+            DisplayTime(_currentTimer);
         }
         else
         {
             _gameOver = true;
             GameOver?.Invoke(_gameOver);
         }
+    }
+
+    private void DisplayTime (float timer)
+    {
+        timer += _timerViewOffset;
+        float seconds = Mathf.FloorToInt(timer % 60);
+
+        _text.text = $"{seconds}";
     }
 }
