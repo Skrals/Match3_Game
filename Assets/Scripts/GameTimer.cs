@@ -10,10 +10,13 @@ public class GameTimer : MonoBehaviour
 
     private bool _gameOver;
 
-    public void StartTimer()
+    public void StartTimer(bool flag)
     {
-        _currentTimer = _levelTime;
-        _gameOver = false;
+        if (flag)
+        {
+            _currentTimer = _levelTime;
+            _gameOver = false;
+        }
     }
 
     private void Update()

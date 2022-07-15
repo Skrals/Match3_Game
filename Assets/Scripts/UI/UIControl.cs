@@ -3,10 +3,10 @@ using UnityEngine.Events;
 
 public class UIControl : MonoBehaviour
 {
+    public event UnityAction<bool> StartGame;
+
     [SerializeField] private MainMenu _mainMenu;
     [SerializeField] private GameUI _gameUI;
-
-    public event UnityAction<bool> StartGame;
 
     public void PlayButton()
     {
@@ -17,7 +17,13 @@ public class UIControl : MonoBehaviour
     public void OkButton()
     {
         UIStateSwitch();
+        GameOverPanel();
         StartGame?.Invoke(false);
+    }
+
+    public void GameOverPanel()
+    {
+        _gameUI.GameOverPanelSwitch();
     }
 
     private void Awake()

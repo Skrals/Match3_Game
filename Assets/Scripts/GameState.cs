@@ -21,11 +21,11 @@ public class GameState : MonoBehaviour
     private void OnStartGame(bool start)
     {
         _game.SetActive(start);
-        _timer.StartTimer();
+        _timer.StartTimer(start);
     }
 
     private void OnGameOver(bool over)
     {
-       
+        _uIControl.GameOverPanel();
     }
 }
