@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class BoardController : Board
 {
     private Tile _oldSelectionTile;
+    private Tile _oldCashSelected;
     private Vector2[] _directionRay = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
 
     private void Update()
@@ -77,9 +79,13 @@ public class BoardController : Board
             return;
         }
 
-        Sprite cashSprite = _oldSelectionTile.SpriteRenderer.sprite;
-        _oldSelectionTile.SpriteRenderer.sprite = tile.SpriteRenderer.sprite;
-        tile.SpriteRenderer.sprite = cashSprite;
+        _oldCashSelected = _oldSelectionTile;
+
+        Vector3 oldPosition = _oldCashSelected.transform.position;
+        Vector3 currentPosition = tile.transform.position;
+
+        _oldCashSelected.transform.DOMove(currentPosition, 1, false);
+        tile.transform.DOMove(oldPosition, 1, false);
     }
 
     private List<Tile> NeighbourTile()
