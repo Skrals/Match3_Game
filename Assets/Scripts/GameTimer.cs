@@ -8,7 +8,7 @@ public class GameTimer : MonoBehaviour
 
     [SerializeField] private float _levelTime;
     [SerializeField] private float _currentTimer;
-    [SerializeField] private TMP_Text _text;
+    [SerializeField] private TMP_Text _viewText;
 
     private bool _gameOver;
     private float _timerViewOffset = 1f;
@@ -46,6 +46,6 @@ public class GameTimer : MonoBehaviour
         timer += _timerViewOffset;
         float seconds = Mathf.FloorToInt(timer % 60);
 
-        _text.text = $"{seconds}";
+        _viewText.text = $"{seconds}";
     }
 }
