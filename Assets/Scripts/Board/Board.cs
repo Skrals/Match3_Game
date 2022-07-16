@@ -5,10 +5,11 @@ public class Board : MonoBehaviour
 {
     public static Board BoardInstance;
 
-    private int _xSize, _ySize;
+    protected int _xSize, _ySize;
+    protected List<Sprite> _tileSprites = new List<Sprite>();
+    protected Tile[,] _tilesArray;
+
     private Tile _tileGameObject;
-    private List<Sprite> _tileSprites = new List<Sprite>();
-    private Tile[,] _tilesArray;
 
     public void SetValue(int xSize, int ySize, Tile tile, List<Sprite> tileSprites)
     {
@@ -20,7 +21,18 @@ public class Board : MonoBehaviour
         CreateBoard();
     }
 
-    public void CreateBoard()
+    public void ClearBoard()
+    {
+        for (int x = 0; x < _tilesArray.GetLength(0); x++)
+        {
+            for (int y = 0; y < _tilesArray.GetLength(1); y++)
+            {
+                Destroy(_tilesArray[x, y].gameObject);
+            }
+        }
+    }
+
+    private void CreateBoard()
     {
         Tile[,] tileArray = new Tile[_xSize, _ySize];
         _tilesArray = tileArray;
@@ -53,17 +65,6 @@ public class Board : MonoBehaviour
                 currentSprite = tile.SpriteRenderer.sprite;
 
                 _tilesArray[x, y] = tileArray[x, y];
-            }
-        }
-    }
-
-    public void ClearBoard()
-    {
-        for (int x = 0; x < _tilesArray.GetLength(0); x++)
-        {
-            for (int y = 0; y < _tilesArray.GetLength(1); y++)
-            {
-                Destroy(_tilesArray[x, y].gameObject);
             }
         }
     }
