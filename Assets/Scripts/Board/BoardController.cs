@@ -10,9 +10,17 @@ public class BoardController : Board
     protected Tile _oldCashSelected;
     protected Vector2[] _directionRay = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
     protected bool isFindMatch = false;
+    protected bool isShift = false;
+    private bool isSearchEmptyTiles = false;
+    private Vector2 _emptyCashed;
 
     private void Update()
     {
+        if (isSearchEmptyTiles)
+        {
+            SearchEmptyTile();
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit2D hit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition));
@@ -28,7 +36,7 @@ public class BoardController : Board
     }
     private async void ChekSelectTile(Tile tile)
     {
-        if (tile.isEmpty)
+        if (tile.isEmpty || isShift)
         {
             return;
         }
@@ -48,7 +56,7 @@ public class BoardController : Board
                 if (NeighbourTile().Contains(tile))
                 {
                     SwapTile(tile);
-                    await Task.Delay(1000);
+                    await Task.Delay(2000);
 
                     FindAllMatch(tile);
                     FindAllMatch(_oldSelectionTile);
@@ -116,7 +124,7 @@ public class BoardController : Board
 
     #endregion
 
-    #region Mathc3 and delete matching
+    #region Matching
 
     private List<Tile> FindMatch(Tile start, Vector2 direction)
     {
@@ -166,8 +174,91 @@ public class BoardController : Board
         {
             tile.SpriteRenderer.sprite = null;
             isFindMatch = false;
+            isSearchEmptyTiles = true;
+        }
+
+    }
+
+    private void FindAnotherMatches(Tile[,] array)
+    {
+        for (int x = 0; x < _xSize; x++)
+        {
+            for (int y = 0; y < _ySize; y++)
+            {
+                FindAllMatch(array[x, y]);
+            }
         }
     }
+
+    #endregion
+
+    #region New tile
+
+    private void SearchEmptyTile()
+    {
+        for (int x = 0; x < _xSize; x++)
+        {
+            for (int y = 0; y < _ySize; y++)
+            {
+                if (_tilesArray[x, y].isEmpty)
+                {
+                    //ToDO анимация падения элементов вниз
+                }
+            }
+        }
+        isSearchEmptyTiles = false;
+    }
+
+    //private void ShiftTileDown(int xPos, int yPos)
+    //{
+    //    isShift = true;
+    //    List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
+
+    //    for (int y = yPos; y < _ySize; y++)
+    //    {
+    //        Tile tile = _tilesArray[xPos, yPos];
+
+    //        if (tile.isEmpty)
+    //        {
+    //            spriteRenderers.Add(tile.SpriteRenderer);
+    //        }
+    //    }
+
+    //    SetNewTileSprite(xPos, spriteRenderers);
+    //    isShift = false;
+    //}
+
+    //private void SetNewTileSprite(int xPos, List<SpriteRenderer> renderer)
+    //{
+    //    for (int y = 0; y < renderer.Count - 1; y++)
+    //    {
+    //        renderer[y].sprite = renderer[y + 1].sprite;
+    //        renderer[y + 1].sprite = GetNewSptite(xPos, _ySize - 1);
+    //    }
+    //}
+
+    //private Sprite GetNewSptite(int xPos, int yPos)
+    //{
+    //    List<Sprite> sprites = new List<Sprite>();
+    //    sprites.AddRange(_tileSprites);
+
+    //    if (xPos > 0)
+    //    {
+    //        sprites.Remove(_tilesArray[xPos - 1, yPos].SpriteRenderer.sprite);
+    //    }
+
+    //    if (xPos < _xSize - 1)
+    //    {
+    //        sprites.Remove(_tilesArray[xPos + 1, yPos].SpriteRenderer.sprite);
+    //    }
+
+    //    if (yPos > 0)
+    //    {
+    //        sprites.Remove(_tilesArray[xPos, yPos - 1].SpriteRenderer.sprite);
+    //    }
+
+    //    return sprites[Random.Range(0, sprites.Count)];
+    //}
 
     #endregion
 }

@@ -576,6 +576,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: e869452d4401801488df088a78d40f81, type: 2}
     - {fileID: 21300000, guid: f56e69665423e824da2d86379d44252b, type: 2}
     - {fileID: 21300000, guid: e3045a8fc16aa2d46a4a3ede833ac341, type: 2}
+    GridPointTemplate: {fileID: 6994060789151579711, guid: 665db6f9ecc9f344c8f3dd16223170f9, type: 3}
 --- !u!114 &1172659229 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7006205648846662852, guid: 2664320dc3fbe42458a7ccf815d041b1, type: 3}

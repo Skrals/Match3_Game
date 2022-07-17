@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        Board.BoardInstance.SetValue(BoardSetting.XSize, BoardSetting.YSize, BoardSetting.TileGameObject, BoardSetting.TileSprite);
+        Board.BoardInstance.SetValue(BoardSetting.XSize, BoardSetting.YSize, BoardSetting.TileGameObject, BoardSetting.TileSprite,BoardSetting.GridPointTemplate);
         _board = Board.BoardInstance;
     }
 
