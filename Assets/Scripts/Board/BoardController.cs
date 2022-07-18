@@ -17,7 +17,8 @@ public class BoardController : Board
     [SerializeField] private bool _isSearchEmptyTiles = false;
     [SerializeField] private bool _isSwap = false;
     [SerializeField] private bool _isFindAllMachesStart = false;
-    [SerializeField] protected bool _isFindAllMatches = false;
+    [SerializeField] private bool _isFindAllMatches = false;
+    [SerializeField] private bool _isGameOver = false;
 
     [Header("Animation speed")]
     [SerializeField] private float _animationSpeed = 0.3f;
@@ -26,9 +27,20 @@ public class BoardController : Board
     private Tile _oldCashSelected;
     private Vector2[] _directionRay = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
 
+    public void OnGameOver(bool over)
+    {
+        _isGameOver = over;
+        _isFindMatch = false;
+        _isShift = false;
+        _isSearchEmptyTiles = false;
+        _isSwap = false;
+        _isFindAllMachesStart = false;
+        _isFindAllMatches = false;
+    }
+
     private async void Update()
     {
-        if (_isShift || _isSwap || _isFindAllMatches)
+        if (_isGameOver || _isShift || _isSwap || _isFindAllMatches)
         {
             return;
         }
@@ -63,41 +75,45 @@ public class BoardController : Board
 
     private async void ChekSelectTile(Tile tile)
     {
-        if (tile == null || tile.isEmpty || _isShift || _isSwap)
+        try
         {
-            return;
-        }
-
-        if (tile.isSelected)
-        {
-            DeselectTile(tile);
-        }
-        else
-        {
-            if (!tile.isSelected && _oldSelectionTile == null)
+            if (tile == null || tile.isEmpty || _isShift || _isSwap)
             {
-                Selected(tile);
+                return;
+            }
+
+            if (tile.isSelected)
+            {
+                DeselectTile(tile);
             }
             else
             {
-                if (NeighbourTile().Contains(tile))
+                if (!tile.isSelected && _oldSelectionTile == null)
                 {
-                    SwapTile(tile);
-                    _isSwap = true;
-                    await Task.Delay(1000);
-                    _isSwap = false;
-
-                    await FindAllMatch(tile);
-                    await FindAllMatch(_oldSelectionTile);
-                    DeselectTile(_oldSelectionTile);
+                    Selected(tile);
                 }
                 else
                 {
-                    DeselectTile(_oldSelectionTile);
-                    Selected(tile);
+                    if (NeighbourTile().Contains(tile))
+                    {
+                        SwapTile(tile);
+                        _isSwap = true;
+                        await Task.Delay(1000);
+                        _isSwap = false;
+
+                        await FindAllMatch(tile);
+                        await FindAllMatch(_oldSelectionTile);
+                        DeselectTile(_oldSelectionTile);
+                    }
+                    else
+                    {
+                        DeselectTile(_oldSelectionTile);
+                        Selected(tile);
+                    }
                 }
             }
         }
+        catch { Debug.Log("Null from Check selection"); }
     }
 
     #region tile selection/deselection
@@ -201,21 +217,24 @@ public class BoardController : Board
 
     private async Task FindAllMatch(Tile tile)
     {
-        if (tile.isEmpty || _isShift)
+        try
         {
-            return;
+            if (tile.isEmpty || _isShift)
+            {
+                return;
+            }
+
+            DeleteSprite(tile, new Vector2[2] { Vector2.up, Vector2.down });
+            DeleteSprite(tile, new Vector2[2] { Vector2.left, Vector2.right }); ;
+
+            if (_isFindMatch)
+            {
+                tile.SpriteRenderer.sprite = null;
+                _isFindMatch = false;
+                _isSearchEmptyTiles = true;
+            }
         }
-
-        DeleteSprite(tile, new Vector2[2] { Vector2.up, Vector2.down });
-        DeleteSprite(tile, new Vector2[2] { Vector2.left, Vector2.right }); ;
-
-        if (_isFindMatch)
-        {
-            tile.SpriteRenderer.sprite = null;
-            _isFindMatch = false;
-            _isSearchEmptyTiles = true;
-        }
-
+        catch { Debug.Log("Null from findAllMatch"); }
         await Task.Yield();
     }
 
@@ -263,7 +282,7 @@ public class BoardController : Board
             {
                 await ShiftTiles(cashEmpty[i].PositionX, cashEmpty[i].PositionY);
                 spriteRenderers.Add(_tilesArray[cashEmpty[i].IndexX, cashEmpty[i].IndexY].SpriteRenderer);
-                SetNewTileSprite(cashEmpty[i].IndexX,cashEmpty[i].IndexY, spriteRenderers);
+                SetNewTileSprite(cashEmpty[i].IndexX, cashEmpty[i].IndexY, spriteRenderers);
                 await Task.Delay(10);
             }
             catch { }
@@ -323,4 +342,5 @@ public class BoardController : Board
         _tilesArray[indexX, indexY].SpriteRenderer.sprite = sprites[Random.Range(0, sprites.Count)];
     }
     #endregion
+
 }

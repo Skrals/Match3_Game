@@ -6,6 +6,7 @@ public class GameState : MonoBehaviour
     [SerializeField] private GameObject _game;
     [SerializeField] private GameTimer _timer;
     [SerializeField] private GameManager _manager;
+    [SerializeField] private BoardController _boardController;
 
     private void OnEnable()
     {
@@ -27,11 +28,13 @@ public class GameState : MonoBehaviour
         {
             _manager.StartGame();
         }
+        _boardController.OnGameOver(!start);
         _timer.StartTimer(start);
     }
 
     private void OnGameOver(bool over)
     {
+        _boardController.OnGameOver(over);
         _uIControl.GameOverPanel();
         _manager.EndGame();
     }

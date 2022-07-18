@@ -31,6 +31,7 @@ public class Board : MonoBehaviour
             for (int y = 0; y < _tilesArray.GetLength(1); y++)
             {
                 Destroy(_tilesArray[x, y].gameObject);
+                Destroy(_cashGrid[x, y].gameObject);
             }
         }
     }

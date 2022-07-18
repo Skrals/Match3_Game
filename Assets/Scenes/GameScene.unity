@@ -539,6 +539,7 @@ MonoBehaviour:
   _game: {fileID: 1933487917}
   _timer: {fileID: 1055294012}
   _manager: {fileID: 1055294013}
+  _boardController: {fileID: 1213355586}
 --- !u!114 &1055294012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -546,7 +547,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1055294008}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb7ed5b43e746e24ba201e6aa9e3fa5d, type: 3}
   m_Name: 
@@ -650,7 +651,9 @@ MonoBehaviour:
   _isShift: 0
   _isSearchEmptyTiles: 0
   _isSwap: 0
-  _isFindAllMaches: 0
+  _isFindAllMachesStart: 0
+  _isFindAllMatches: 0
+  _isGameOver: 0
   _animationSpeed: 0.3
 --- !u!1 &1933487917
 GameObject:
