@@ -4,6 +4,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using DG.Tweening;
 
+//TODO протестировать работу, перепроверить очередь срабатывани€ асинхронных методов
+//TODO полна€ очистка доски включа€ точки - в классе боард
+//TODO набор очков за матчинг и отображение в интерфейсе
+//TODO по возможности - разъединить логику класса на составл€ющие
+
 public class BoardController : Board
 {
     [Header("Mechanism flags")]
@@ -135,6 +140,8 @@ public class BoardController : Board
         tile.PositionY = (int)oldGridPositionCash.y;
         tile.name = $"Tile - {tile.PositionX}, {tile.PositionY}";
     }
+
+    //TODO метод отмены свапа при несоответствии
 
     private List<Tile> NeighbourTile()
     {
