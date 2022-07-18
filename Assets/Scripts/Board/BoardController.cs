@@ -16,7 +16,8 @@ public class BoardController : Board
     [SerializeField] private bool _isShift = false;
     [SerializeField] private bool _isSearchEmptyTiles = false;
     [SerializeField] private bool _isSwap = false;
-    [SerializeField] private bool _isFindAllMaches = false;
+    [SerializeField] private bool _isFindAllMachesStart = false;
+    [SerializeField] protected bool _isFindAllMatches = false;
 
     [Header("Animation speed")]
     [SerializeField] private float _animationSpeed = 0.3f;
@@ -27,7 +28,7 @@ public class BoardController : Board
 
     private async void Update()
     {
-        if (_isShift)
+        if (_isShift || _isSwap || _isFindAllMatches)
         {
             return;
         }
@@ -37,9 +38,10 @@ public class BoardController : Board
             SearchEmptyTile();
         }
 
-        if (_isFindAllMaches)
+        if (_isFindAllMachesStart)
         {
-            _isFindAllMaches = false;
+            _isFindAllMachesStart = false;
+            _isFindAllMatches = true;
             await FindAnotherMatches(_tilesArray);
             await Task.Delay(100);
             _isSearchEmptyTiles = true;
@@ -231,6 +233,8 @@ public class BoardController : Board
                 await FindAllMatch(array[x, y]);
             }
         }
+        await Task.Delay(100);
+        _isFindAllMatches = false;
     }
 
     #endregion
@@ -267,7 +271,7 @@ public class BoardController : Board
 
         _isSearchEmptyTiles = false;
         await Task.Delay(1000);
-        _isFindAllMaches = true;
+        _isFindAllMachesStart = true;
     }
 
     private async Task ShiftTiles(int xPos, int yPos)
@@ -293,7 +297,7 @@ public class BoardController : Board
             await Task.Delay(10);
         }
         _isShift = false;
-        await Task.Delay(10);
+        await Task.Delay(100);
     }
 
     private Tile FindTile(int xPos, int yPos)
