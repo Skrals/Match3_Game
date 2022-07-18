@@ -6,19 +6,38 @@ using DG.Tweening;
 
 public class BoardController : Board
 {
-    protected Tile _oldSelectionTile;
-    protected Tile _oldCashSelected;
-    protected Vector2[] _directionRay = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
-    protected bool isFindMatch = false;
-    protected bool isShift = false;
-    private bool isSearchEmptyTiles = false;
-    private Vector2 _emptyCashed;
+    [Header("Mechanism flags")]
+    [SerializeField] private bool _isFindMatch = false;
+    [SerializeField] private bool _isShift = false;
+    [SerializeField] private bool _isSearchEmptyTiles = false;
+    [SerializeField] private bool _isSwap = false;
+    [SerializeField] private bool _isFindAllMaches = false;
 
-    private void Update()
+    [Header("Animation speed")]
+    [SerializeField] private float _animationSpeed = 0.3f;
+
+    private Tile _oldSelectionTile;
+    private Tile _oldCashSelected;
+    private Vector2[] _directionRay = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+
+    private async void Update()
     {
-        if (isSearchEmptyTiles)
+        if (_isShift)
+        {
+            return;
+        }
+
+        if (_isSearchEmptyTiles)
         {
             SearchEmptyTile();
+        }
+
+        if (_isFindAllMaches)
+        {
+            _isFindAllMaches = false;
+            await FindAnotherMatches(_tilesArray);
+            await Task.Delay(100);
+            _isSearchEmptyTiles = true;
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -34,9 +53,10 @@ public class BoardController : Board
             }
         }
     }
+
     private async void ChekSelectTile(Tile tile)
     {
-        if (tile.isEmpty || isShift)
+        if (tile == null || tile.isEmpty || _isShift || _isSwap)
         {
             return;
         }
@@ -56,10 +76,12 @@ public class BoardController : Board
                 if (NeighbourTile().Contains(tile))
                 {
                     SwapTile(tile);
-                    await Task.Delay(2000);
+                    _isSwap = true;
+                    await Task.Delay(1000);
+                    _isSwap = false;
 
-                    FindAllMatch(tile);
-                    FindAllMatch(_oldSelectionTile);
+                    await FindAllMatch(tile);
+                    await FindAllMatch(_oldSelectionTile);
                     DeselectTile(_oldSelectionTile);
                 }
                 else
@@ -99,11 +121,19 @@ public class BoardController : Board
 
         _oldCashSelected = _oldSelectionTile;
 
+        Vector2 oldGridPositionCash = new Vector2(_oldCashSelected.PositionX, _oldCashSelected.PositionY);
         Vector3 oldPosition = _oldCashSelected.transform.position;
         Vector3 currentPosition = tile.transform.position;
 
-        _oldCashSelected.transform.DOMove(currentPosition, 1, false);
-        tile.transform.DOMove(oldPosition, 1, false);
+        _oldCashSelected.transform.DOMove(currentPosition, _animationSpeed, false);
+        _oldCashSelected.PositionX = tile.PositionX;
+        _oldCashSelected.PositionY = tile.PositionY;
+        _oldCashSelected.name = $"Tile - {_oldCashSelected.PositionX}, {_oldCashSelected.PositionY}";
+
+        tile.transform.DOMove(oldPosition, _animationSpeed, false);
+        tile.PositionX = (int)oldGridPositionCash.x;
+        tile.PositionY = (int)oldGridPositionCash.y;
+        tile.name = $"Tile - {tile.PositionX}, {tile.PositionY}";
     }
 
     private List<Tile> NeighbourTile()
@@ -156,13 +186,13 @@ public class BoardController : Board
             {
                 findTiles[i].SpriteRenderer.sprite = null;
             }
-            isFindMatch = true;
+            _isFindMatch = true;
         }
     }
 
-    private void FindAllMatch(Tile tile)
+    private async Task FindAllMatch(Tile tile)
     {
-        if (tile.isEmpty)
+        if (tile.isEmpty || _isShift)
         {
             return;
         }
@@ -170,95 +200,116 @@ public class BoardController : Board
         DeleteSprite(tile, new Vector2[2] { Vector2.up, Vector2.down });
         DeleteSprite(tile, new Vector2[2] { Vector2.left, Vector2.right }); ;
 
-        if (isFindMatch)
+        if (_isFindMatch)
         {
             tile.SpriteRenderer.sprite = null;
-            isFindMatch = false;
-            isSearchEmptyTiles = true;
+            _isFindMatch = false;
+            _isSearchEmptyTiles = true;
         }
 
+        await Task.Yield();
     }
 
-    private void FindAnotherMatches(Tile[,] array)
+    private async Task FindAnotherMatches(Tile[,] array)
     {
         for (int x = 0; x < _xSize; x++)
         {
             for (int y = 0; y < _ySize; y++)
             {
-                FindAllMatch(array[x, y]);
+                if (_isFindMatch)
+                {
+                    await Task.Delay(50);
+                }
+
+                await FindAllMatch(array[x, y]);
             }
         }
     }
 
     #endregion
 
-    #region New tile
+    #region Search empty, shift tiles, set new sprite for empty tile
 
-    private void SearchEmptyTile()
+    private async void SearchEmptyTile()
     {
+        List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
+        List<Tile> cashEmpty = new List<Tile>();
+
         for (int x = 0; x < _xSize; x++)
         {
             for (int y = 0; y < _ySize; y++)
             {
                 if (_tilesArray[x, y].isEmpty)
                 {
-                    //ToDO анимация падения элементов вниз
+                    cashEmpty.Add(_tilesArray[x, y]);
                 }
             }
         }
-        isSearchEmptyTiles = false;
+
+        for (int i = 0; i < cashEmpty.Count; i++)
+        {
+            try
+            {
+                await ShiftTiles(cashEmpty[i].PositionX, cashEmpty[i].PositionY);
+                spriteRenderers.Add(_tilesArray[cashEmpty[i].IndexX, cashEmpty[i].IndexY].SpriteRenderer);
+                SetNewTileSprite(cashEmpty[i].IndexX,cashEmpty[i].IndexY, spriteRenderers);
+                await Task.Delay(10);
+            }
+            catch { }
+        }
+
+        _isSearchEmptyTiles = false;
+        await Task.Delay(1000);
+        _isFindAllMaches = true;
     }
 
-    //private void ShiftTileDown(int xPos, int yPos)
-    //{
-    //    isShift = true;
-    //    List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
+    private async Task ShiftTiles(int xPos, int yPos)
+    {
+        _isShift = true;
 
-    //    for (int y = yPos; y < _ySize; y++)
-    //    {
-    //        Tile tile = _tilesArray[xPos, yPos];
+        for (int y = yPos; y < _ySize - 1; y++)
+        {
+            Tile first = FindTile(xPos, y);
+            Tile second = FindTile(xPos, y + 1);
+            Vector2 cashFirstPos = new Vector2(first.PositionX, first.PositionY);
+            Vector2 cashSecondPos = new Vector2(second.PositionX, second.PositionY);
 
-    //        if (tile.isEmpty)
-    //        {
-    //            spriteRenderers.Add(tile.SpriteRenderer);
-    //        }
-    //    }
+            first.transform.DOMove(_cashGrid[(int)cashFirstPos.x, (int)cashFirstPos.y + 1].transform.position, _animationSpeed, false);
+            second.transform.DOMove(_cashGrid[(int)cashFirstPos.x, (int)cashFirstPos.y].transform.position, _animationSpeed, false);
 
-    //    SetNewTileSprite(xPos, spriteRenderers);
-    //    isShift = false;
-    //}
+            first.PositionX = (int)cashSecondPos.x;
+            first.PositionY = (int)cashSecondPos.y;
 
-    //private void SetNewTileSprite(int xPos, List<SpriteRenderer> renderer)
-    //{
-    //    for (int y = 0; y < renderer.Count - 1; y++)
-    //    {
-    //        renderer[y].sprite = renderer[y + 1].sprite;
-    //        renderer[y + 1].sprite = GetNewSptite(xPos, _ySize - 1);
-    //    }
-    //}
+            second.PositionX = (int)cashFirstPos.x;
+            second.PositionY = (int)cashFirstPos.y;
 
-    //private Sprite GetNewSptite(int xPos, int yPos)
-    //{
-    //    List<Sprite> sprites = new List<Sprite>();
-    //    sprites.AddRange(_tileSprites);
+            await Task.Delay(10);
+        }
+        _isShift = false;
+        await Task.Delay(10);
+    }
 
-    //    if (xPos > 0)
-    //    {
-    //        sprites.Remove(_tilesArray[xPos - 1, yPos].SpriteRenderer.sprite);
-    //    }
+    private Tile FindTile(int xPos, int yPos)
+    {
+        for (int x = 0; x < _xSize; x++)
+        {
+            for (int y = 0; y < _ySize; y++)
+            {
+                if (_tilesArray[x, y].PositionX == xPos && _tilesArray[x, y].PositionY == yPos)
+                {
+                    return _tilesArray[x, y];
+                }
+            }
+        }
+        return null;
+    }
 
-    //    if (xPos < _xSize - 1)
-    //    {
-    //        sprites.Remove(_tilesArray[xPos + 1, yPos].SpriteRenderer.sprite);
-    //    }
+    private void SetNewTileSprite(int indexX, int indexY, List<SpriteRenderer> renderer)
+    {
+        List<Sprite> sprites = new List<Sprite>();
+        sprites.AddRange(_tileSprites);
 
-    //    if (yPos > 0)
-    //    {
-    //        sprites.Remove(_tilesArray[xPos, yPos - 1].SpriteRenderer.sprite);
-    //    }
-
-    //    return sprites[Random.Range(0, sprites.Count)];
-    //}
-
+        _tilesArray[indexX, indexY].SpriteRenderer.sprite = sprites[Random.Range(0, sprites.Count)];
+    }
     #endregion
 }

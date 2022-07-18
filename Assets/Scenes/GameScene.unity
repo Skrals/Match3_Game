@@ -646,6 +646,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6ecf96450b9a6f4c8d4d9a396a147d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isFindMatch: 0
+  _isShift: 0
+  _isSearchEmptyTiles: 0
+  _isSwap: 0
+  _isFindAllMaches: 0
+  _animationSpeed: 0.3
 --- !u!1 &1933487917
 GameObject:
   m_ObjectHideFlags: 0

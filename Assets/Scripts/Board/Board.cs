@@ -54,6 +54,11 @@ public class Board : MonoBehaviour
                 Vector3 position = new Vector3(xPos + (tileSize.x * x), yPos + (tileSize.y * y));
                 Tile tile = Instantiate(_tileGameObject, transform.position, Quaternion.identity);
                 tile.transform.position = position;
+                tile.name = $"Tile - {x}, {y}";
+                tile.PositionX = x;
+                tile.PositionY = y;
+                tile.IndexX = x;
+                tile.IndexY = y;
                 tile.transform.parent = transform;
 
                 tileArray[x, y] = tile;
@@ -73,8 +78,9 @@ public class Board : MonoBehaviour
                 _tilesArray[x, y] = tileArray[x, y];
 
                 _cashGrid[x, y] = Instantiate(_gridPoint, transform.position, Quaternion.identity);
-                _cashGrid [x,y].transform.position = position;
-                _cashGrid [x,y].transform.parent = transform;
+                _cashGrid[x, y].transform.position = position;
+                _cashGrid[x, y].name = $"Point - {x}, {y}";
+                _cashGrid[x, y].transform.parent = transform;
             }
         }
     }
