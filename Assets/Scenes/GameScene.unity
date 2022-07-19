@@ -552,7 +552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb7ed5b43e746e24ba201e6aa9e3fa5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelTime: 2
+  _levelTime: 20
   _currentTimer: 0
   _viewText: {fileID: 532336124}
 --- !u!114 &1055294013
@@ -648,6 +648,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isFindMatch: 0
+  _isMatch: 0
   _isShift: 0
   _isSearchEmptyTiles: 0
   _isSwap: 0

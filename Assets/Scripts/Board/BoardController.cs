@@ -5,7 +5,6 @@ using UnityEngine;
 using DG.Tweening;
 
 //TODO протестировать работу, перепроверить очередь срабатывани€ асинхронных методов
-//TODO полна€ очистка доски включа€ точки - в классе боард
 //TODO набор очков за матчинг и отображение в интерфейсе
 //TODO по возможности - разъединить логику класса на составл€ющие
 
@@ -13,6 +12,7 @@ public class BoardController : Board
 {
     [Header("Mechanism flags")]
     [SerializeField] private bool _isFindMatch = false;
+    [SerializeField] private bool _isMatch = false;
     [SerializeField] private bool _isShift = false;
     [SerializeField] private bool _isSearchEmptyTiles = false;
     [SerializeField] private bool _isSwap = false;
@@ -26,16 +26,13 @@ public class BoardController : Board
     private Tile _oldSelectionTile;
     private Tile _oldCashSelected;
     private Vector2[] _directionRay = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+    private List<Task> _tasks = new List<Task>();
+    private List<Task> _secondTasks = new List<Task>();
 
     public void OnGameOver(bool over)
     {
         _isGameOver = over;
-        _isFindMatch = false;
-        _isShift = false;
-        _isSearchEmptyTiles = false;
-        _isSwap = false;
-        _isFindAllMachesStart = false;
-        _isFindAllMatches = false;
+        _isFindMatch = _isShift = _isSearchEmptyTiles = _isSwap = _isFindAllMachesStart = _isFindAllMatches = _isMatch = false;
     }
 
     private async void Update()
@@ -103,6 +100,12 @@ public class BoardController : Board
 
                         await FindAllMatch(tile);
                         await FindAllMatch(_oldSelectionTile);
+
+                        if (!_isMatch)
+                        {
+                            SwapTile(tile);
+                        }
+
                         DeselectTile(_oldSelectionTile);
                     }
                     else
@@ -123,12 +126,14 @@ public class BoardController : Board
         tile.isSelected = true;
         tile.SpriteRenderer.color = new Color(0.5f, 0.5f, 0.5f);
         _oldSelectionTile = tile;
+        _isMatch = false;
     }
 
     private void DeselectTile(Tile tile)
     {
         tile.isSelected = false;
         tile.SpriteRenderer.color = new Color(1, 1, 1);
+        _isMatch = false;
         _oldSelectionTile = null;
     }
 
@@ -158,8 +163,6 @@ public class BoardController : Board
         tile.PositionY = (int)oldGridPositionCash.y;
         tile.name = $"Tile - {tile.PositionX}, {tile.PositionY}";
     }
-
-    //TODO метод отмены свапа при несоответствии
 
     private List<Tile> NeighbourTile()
     {
@@ -231,6 +234,7 @@ public class BoardController : Board
             {
                 tile.SpriteRenderer.sprite = null;
                 _isFindMatch = false;
+                _isMatch = true;
                 _isSearchEmptyTiles = true;
             }
         }
@@ -244,15 +248,12 @@ public class BoardController : Board
         {
             for (int y = 0; y < _ySize; y++)
             {
-                if (_isFindMatch)
-                {
-                    await Task.Delay(50);
-                }
-
-                await FindAllMatch(array[x, y]);
+                _tasks.Add(FindAllMatch(array[x, y]));
             }
         }
+        await Task.WhenAll(_tasks.ToArray());
         await Task.Delay(100);
+        _tasks.Clear();
         _isFindAllMatches = false;
     }
 
@@ -264,6 +265,8 @@ public class BoardController : Board
     {
         List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
         List<Tile> cashEmpty = new List<Tile>();
+        Tile tmp;
+        int j;
 
         for (int x = 0; x < _xSize; x++)
         {
@@ -276,19 +279,36 @@ public class BoardController : Board
             }
         }
 
+        for (int i = 0; i < cashEmpty.Count; i++)//sorting because a firs element of list is not minimal; crutch)))
+        {
+            tmp = cashEmpty[i];
+
+            for (j = i - 1; j >= 0 && cashEmpty[j].PositionY > tmp.PositionY; j--)
+            {
+                cashEmpty[j + 1] = cashEmpty[j];
+            }
+            cashEmpty[j + 1] = tmp;
+        }
+
         for (int i = 0; i < cashEmpty.Count; i++)
         {
             try
             {
-                await ShiftTiles(cashEmpty[i].PositionX, cashEmpty[i].PositionY);
+                _tasks.Add(ShiftTiles(cashEmpty[i].PositionX, cashEmpty[i].PositionY));
                 spriteRenderers.Add(_tilesArray[cashEmpty[i].IndexX, cashEmpty[i].IndexY].SpriteRenderer);
-                SetNewTileSprite(cashEmpty[i].IndexX, cashEmpty[i].IndexY, spriteRenderers);
+                _secondTasks.Add(SetNewTileSprite(cashEmpty[i].IndexX, cashEmpty[i].IndexY));
                 await Task.Delay(10);
             }
             catch { }
         }
 
+        await Task.WhenAll(_tasks.ToArray());
+        await Task.WhenAll(_secondTasks.ToArray());
+
         _isSearchEmptyTiles = false;
+        _tasks.Clear();
+        _secondTasks.Clear();
+
         await Task.Delay(1000);
         _isFindAllMachesStart = true;
     }
@@ -314,6 +334,11 @@ public class BoardController : Board
             second.PositionY = (int)cashFirstPos.y;
 
             await Task.Delay(10);
+
+            if (y + 1 >= _ySize)
+            {
+                break;
+            }
         }
         _isShift = false;
         await Task.Delay(100);
@@ -334,8 +359,9 @@ public class BoardController : Board
         return null;
     }
 
-    private void SetNewTileSprite(int indexX, int indexY, List<SpriteRenderer> renderer)
+    private async Task SetNewTileSprite(int indexX, int indexY)
     {
+        await Task.Delay(100);
         List<Sprite> sprites = new List<Sprite>();
         sprites.AddRange(_tileSprites);
 
