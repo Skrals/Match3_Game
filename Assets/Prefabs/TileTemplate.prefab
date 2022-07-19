@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 416edabe58a570d4ab641406e05fa69b, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -100,6 +100,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <SpriteRenderer>k__BackingField: {fileID: 5034304343802460922}
   <isSelected>k__BackingField: 0
+  <PositionX>k__BackingField: 0
+  <PositionY>k__BackingField: 0
+  <IndexX>k__BackingField: 0
+  <IndexY>k__BackingField: 0
 --- !u!61 &6701182782577301939
 BoxCollider2D:
   m_ObjectHideFlags: 0

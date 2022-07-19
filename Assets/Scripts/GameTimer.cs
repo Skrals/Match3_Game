@@ -44,8 +44,8 @@ public class GameTimer : MonoBehaviour
     private void DisplayTime (float timer)
     {
         timer += _timerViewOffset;
-        float seconds = Mathf.FloorToInt(timer % 60);
+        float seconds = Mathf.FloorToInt(timer);
 
-        _viewText.text = $"{seconds}";
+        _viewText.text = $"Time: {seconds}";
     }
 }

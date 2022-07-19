@@ -41,6 +41,6 @@ public class ScoreCounter : MonoBehaviour
 
     private void ShowScore(int score)
     {
-        _scoreText.text = score.ToString();
+        _scoreText.text = $"Score: {score}";
     }
 }
