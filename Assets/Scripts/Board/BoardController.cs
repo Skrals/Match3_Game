@@ -101,8 +101,8 @@ public class BoardController : Board
                         await Task.Delay(1000);
                         _isSwap = false;
 
-                        await FindAllMatch(tile);
-                        await FindAllMatch(_oldSelectionTile);
+                        FindAllMatch(tile);
+                        FindAllMatch(_oldSelectionTile);
 
                         if (!_isMatch)
                         {
