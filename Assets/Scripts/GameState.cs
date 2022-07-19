@@ -6,17 +6,20 @@ public class GameState : MonoBehaviour
     [SerializeField] private GameObject _game;
     [SerializeField] private GameTimer _timer;
     [SerializeField] private GameManager _manager;
+    [SerializeField] private ScoreCounter _scoreCounter;
     [SerializeField] private BoardController _boardController;
 
     private void OnEnable()
     {
         _uIControl.StartGame += OnStartGame;
+        _boardController.ScoreUpdate += OnScoreUpdate;
         _timer.GameOver += OnGameOver;
     }
 
     private void OnDisable()
     {
         _uIControl.StartGame -= OnStartGame;
+        _boardController.ScoreUpdate -= OnScoreUpdate;
         _timer.GameOver -= OnGameOver;
     }
 
@@ -27,7 +30,9 @@ public class GameState : MonoBehaviour
         if (start)
         {
             _manager.StartGame();
+            _scoreCounter.ClearScore();
         }
+
         _boardController.OnGameOver(!start);
         _timer.StartTimer(start);
     }
@@ -37,5 +42,10 @@ public class GameState : MonoBehaviour
         _boardController.OnGameOver(over);
         _uIControl.GameOverPanel();
         _manager.EndGame();
+    }
+
+    private void OnScoreUpdate(int tilesCount)
+    {
+        _scoreCounter.OnMatchFound(tilesCount);
     }
 }

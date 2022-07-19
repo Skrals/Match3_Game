@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 using DG.Tweening;
 
 //TODO протестировать работу, перепроверить очередь срабатывания асинхронных методов
@@ -10,6 +10,8 @@ using DG.Tweening;
 
 public class BoardController : Board
 {
+    public event UnityAction<int> ScoreUpdate;
+
     [Header("Mechanism flags")]
     [SerializeField] private bool _isFindMatch = false;
     [SerializeField] private bool _isMatch = false;
@@ -204,7 +206,6 @@ public class BoardController : Board
 
     private void DeleteSprite(Tile tile, Vector2[] dirArray)
     {
-
         List<Tile> findTiles = new List<Tile>();
 
         for (int i = 0; i < dirArray.Length; i++)
@@ -218,6 +219,8 @@ public class BoardController : Board
             {
                 findTiles[i].SpriteRenderer.sprite = null;
             }
+
+            ScoreUpdate?.Invoke(findTiles.Count + 1);
             _isFindMatch = true;
         }
     }
