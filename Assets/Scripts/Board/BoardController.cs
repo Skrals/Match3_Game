@@ -311,8 +311,12 @@ public class BoardController : Board
             catch { }
         }
 
-        await Task.WhenAll(_tasks.ToArray());
-        await Task.WhenAll(_secondTasks.ToArray());
+        try
+        {
+            await Task.WhenAll(_tasks.ToArray());
+            await Task.WhenAll(_secondTasks.ToArray());
+        }
+        catch { Debug.Log("Null from SearchEmptyTile tasks"); }
 
         _isSearchEmptyTiles = false;
         _isEffectsPlayed = false;
@@ -375,11 +379,15 @@ public class BoardController : Board
 
     private async Task SetNewTileSprite(int indexX, int indexY)
     {
-        await Task.Delay(100);
-        List<Sprite> sprites = new List<Sprite>();
-        sprites.AddRange(_tileSprites);
+        try
+        {
+            await Task.Delay(100);
+            List<Sprite> sprites = new List<Sprite>();
+            sprites.AddRange(_tileSprites);
 
-        _tilesArray[indexX, indexY].SpriteRenderer.sprite = sprites[Random.Range(0, sprites.Count)];
+            _tilesArray[indexX, indexY].SpriteRenderer.sprite = sprites[Random.Range(0, sprites.Count)];
+        }
+        catch { Debug.Log("Null from SetNewTileSprite()"); }
     }
     #endregion
 
