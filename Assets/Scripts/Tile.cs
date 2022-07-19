@@ -9,4 +9,10 @@ public class Tile : MonoBehaviour
     [field: SerializeField] public int PositionY { get; set; }
     [field: SerializeField] public int IndexX { get; set; }
     [field: SerializeField] public int IndexY { get; set; }
+    [SerializeField] private ParticleSystem _destroyVFX;
+
+    public void PlayVFXDestroy()
+    {
+        Instantiate(_destroyVFX, transform.position,Quaternion.identity);
+    }
 }

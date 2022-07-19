@@ -104,6 +104,7 @@ MonoBehaviour:
   <PositionY>k__BackingField: 0
   <IndexX>k__BackingField: 0
   <IndexY>k__BackingField: 0
+  _destroyVFX: {fileID: 848967367757132663, guid: 58e128f1e3dd1bf4b87e67f482f26d98, type: 3}
 --- !u!61 &6701182782577301939
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -27,6 +27,7 @@ public class BoardController : Board
 
     private Tile _oldSelectionTile;
     private Tile _oldCashSelected;
+    private bool _isEffectsPlayed = false;
     private Vector2[] _directionRay = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
     private List<Task> _tasks = new List<Task>();
     private List<Task> _secondTasks = new List<Task>();
@@ -301,6 +302,8 @@ public class BoardController : Board
             cashEmpty[j + 1] = tmp;
         }
 
+        PlayEffects(cashEmpty);
+
         for (int i = 0; i < cashEmpty.Count; i++)
         {
             try
@@ -317,6 +320,7 @@ public class BoardController : Board
         await Task.WhenAll(_secondTasks.ToArray());
 
         _isSearchEmptyTiles = false;
+        _isEffectsPlayed = false;
         _tasks.Clear();
         _secondTasks.Clear();
 
@@ -384,4 +388,15 @@ public class BoardController : Board
     }
     #endregion
 
+    private void PlayEffects(List<Tile> tiles)
+    {
+        if (!_isEffectsPlayed)
+        {
+            foreach (Tile tile in tiles)
+            {
+                tile.PlayVFXDestroy();
+            }
+            _isEffectsPlayed = true;
+        }
+    }
 }
