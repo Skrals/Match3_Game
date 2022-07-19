@@ -148,11 +148,6 @@ public class BoardController : Board
     #region swap tiles
     private void SwapTile(Tile tile)
     {
-        if (_oldSelectionTile.SpriteRenderer.sprite == tile.SpriteRenderer.sprite)
-        {
-            return;
-        }
-
         _oldCashSelected = _oldSelectionTile;
 
         Vector2 oldGridPositionCash = new Vector2(_oldCashSelected.PositionX, _oldCashSelected.PositionY);

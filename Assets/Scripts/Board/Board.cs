@@ -80,7 +80,7 @@ public class Board : MonoBehaviour
 
                 _cashGrid[x, y] = Instantiate(_gridPoint, transform.position, Quaternion.identity);
                 _cashGrid[x, y].transform.position = position;
-                _cashGrid[x, y].name = $"Point - {x}, {y}";
+                _cashGrid[x, y].name = $"Grid_Point - {x}, {y}";
                 _cashGrid[x, y].transform.parent = transform;
             }
         }
