@@ -51,8 +51,10 @@ public class BoardController : Board
         {
             _isFindAllMachesStart = false;
             _isFindAllMatches = true;
+
             await FindAnotherMatches(_tilesArray);
             await Task.Delay(100);
+
             _isSearchEmptyTiles = true;
         }
 
@@ -94,6 +96,7 @@ public class BoardController : Board
                     if (NeighbourTile().Contains(tile))
                     {
                         SwapTile(tile);
+
                         _isSwap = true;
                         await Task.Delay(1000);
                         _isSwap = false;
@@ -177,6 +180,7 @@ public class BoardController : Board
                 neighbours.Add(hit.collider.gameObject.GetComponent<Tile>());
             }
         }
+
         return neighbours;
     }
 
@@ -239,6 +243,7 @@ public class BoardController : Board
             }
         }
         catch { Debug.Log("Null from findAllMatch"); }
+
         await Task.Yield();
     }
 
@@ -251,9 +256,12 @@ public class BoardController : Board
                 _tasks.Add(FindAllMatch(array[x, y]));
             }
         }
+
         await Task.WhenAll(_tasks.ToArray());
         await Task.Delay(100);
+
         _tasks.Clear();
+
         _isFindAllMatches = false;
     }
 
@@ -310,6 +318,7 @@ public class BoardController : Board
         _secondTasks.Clear();
 
         await Task.Delay(1000);
+
         _isFindAllMachesStart = true;
     }
 
@@ -340,7 +349,9 @@ public class BoardController : Board
                 break;
             }
         }
+
         _isShift = false;
+
         await Task.Delay(100);
     }
 
@@ -356,6 +367,7 @@ public class BoardController : Board
                 }
             }
         }
+
         return null;
     }
 
