@@ -301,6 +301,4 @@ public class BoardController : Board
         catch { Debug.Log("Null from SetNewTileSprite()"); }
     }
     #endregion
-
-
 }
