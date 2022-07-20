@@ -4,10 +4,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
 
-//TODO протестировать работу, перепроверить очередь срабатывани€ асинхронных методов
-//TODO набор очков за матчинг и отображение в интерфейсе
-//TODO по возможности - разъединить логику класса на составл€ющие
-
 public class BoardController : Board
 {
     public event UnityAction<int> ScoreUpdate;
