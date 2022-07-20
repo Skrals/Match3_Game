@@ -26,7 +26,7 @@ public class BoardController : Board
     [SerializeField] private float _animationSpeed = 0.3f;
 
     private Tile _oldSelectionTile;
-    private bool _isEffectsPlayed = false;
+    private bool _isDestroyEffectPlayed = false;
     private Vector2[] _directionRay = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
     private List<Task> _tasks = new List<Task>();
     private List<Task> _secondTasks = new List<Task>();
@@ -221,7 +221,7 @@ public class BoardController : Board
 
         CashEmptyTiles.CashEmpty(ref cashEmpty, _tilesArray);
 
-        PlayEffects(cashEmpty);
+        EffectsPlayer.PlayDestoryEffects(cashEmpty, ref _isDestroyEffectPlayed);
 
         for (int i = 0; i < cashEmpty.Count; i++)
         {
@@ -243,7 +243,7 @@ public class BoardController : Board
         catch { Debug.Log("Null from SearchEmptyTile tasks"); }
 
         _isSearchEmptyTiles = false;
-        _isEffectsPlayed = false;
+        _isDestroyEffectPlayed = false;
         _tasks.Clear();
         _secondTasks.Clear();
         await Task.Delay(1000);
@@ -302,15 +302,5 @@ public class BoardController : Board
     }
     #endregion
 
-    private void PlayEffects(List<Tile> tiles)
-    {
-        if (!_isEffectsPlayed)
-        {
-            foreach (Tile tile in tiles)
-            {
-                tile.PlayVFXDestroy();
-            }
-            _isEffectsPlayed = true;
-        }
-    }
+
 }
