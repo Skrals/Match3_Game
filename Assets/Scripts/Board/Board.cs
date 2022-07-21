@@ -58,8 +58,7 @@ public class Board : MonoBehaviour
                 tile.name = $"Tile - {x}, {y}";
                 tile.PositionX = x;
                 tile.PositionY = y;
-                tile.IndexX = x;
-                tile.IndexY = y;
+                tile.SetTileIndex(x, y);
                 tile.transform.parent = transform;
 
                 tileArray[x, y] = tile;

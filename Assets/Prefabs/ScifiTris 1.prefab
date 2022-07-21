@@ -4851,7 +4851,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_RenderMode: 4
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -9733,7 +9733,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_RenderMode: 1
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -14714,7 +14714,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -19596,7 +19596,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_RenderMode: 1
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -24535,5 +24535,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ca2bb96d7a4ea44d80169dd2b628628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destroyTime: 0
+  _destroyTime: 1
   _vFX: {fileID: 848967367757132663}
